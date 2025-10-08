@@ -1,9 +1,13 @@
 package main;
 
-import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
-import java.util.Random;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 import inputs.KeyboardInputs;
@@ -12,54 +16,36 @@ import inputs.MouseInputs;
 public class GamePanel extends JPanel {
 
   private MouseInputs mouseInputs;
-  private int x = 200;
-  private int y = 200;
-  private int xDir = 2;
-  private int yDir = 2;
-  private Color color;
-  private Random random;
+  private BufferedImage img, subImg;
 
   public GamePanel() {
-    random = new Random();
+    importImg();
     mouseInputs = new MouseInputs(this);
+    setPanelSize();
     addKeyListener(new KeyboardInputs(this));
     addMouseListener(mouseInputs);
     addMouseMotionListener(mouseInputs);
   }
 
-  public void setRectPos(int x, int y) {
-    this.x = x;
-    this.y = y;
-  }
-
-  private void updateRectangle() {
-    x += xDir;
-    if (x > 400 || x < 0) {
-      xDir *= -1;
-      color = getRndColor();
-    }
-
-    y += yDir;
-    if (y > 400 || y < 0) {
-      yDir *= -1;
-      color = getRndColor();
+  private void importImg() {
+    File file = new File("../res/player_sprites.png");
+    try {
+      img = ImageIO.read(file);
+    } catch (IOException e) {
+      e.printStackTrace();
     }
   }
 
-  private Color getRndColor() {
-    int r = random.nextInt(256);
-    int g = random.nextInt(256);
-    int b = random.nextInt(256);
-
-    return new Color(r, g, b);
+  private void setPanelSize() {
+    Dimension size = new Dimension(1280, 800);
+    setPreferredSize(size);
   }
 
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
 
-    updateRectangle();
-    g.setColor(color);
-    g.fillRect(x, y, 200, 50);
+    subImg = img.getSubimage(1 * 64, 8 * 40, 64, 40);
+    g.drawImage(subImg, 0, 0, 128, 80, null);
   }
 
 }
