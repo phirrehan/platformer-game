@@ -2,9 +2,9 @@ package entities;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.File;
 
-import javax.imageio.ImageIO;
+import main.Game;
+import utils.LoadSave;
 
 import static utils.Constants.PlayerConstants.*;
 import static utils.Constants.Directions.*;
@@ -16,7 +16,7 @@ public class Player extends Entity {
   private int playerAction = IDLE;
   private boolean moving, attacking;
   private boolean left, up, right, down;
-  private float playerSpeed = 2.f;
+  private float playerSpeed = 1.f;
 
   public Player(float x, float y) {
     super(x, y);
@@ -30,21 +30,17 @@ public class Player extends Entity {
   }
 
   public void render(Graphics g) {
-    g.drawImage(animations[playerAction][aniIndex], (int) x, (int) y, 64 * 4, 40 * 4, null);
+    g.drawImage(animations[playerAction][aniIndex], (int) x, (int) y, (int) (64 * Game.SCALE), (int) (40 * Game.SCALE),
+        null);
   }
 
   private void loadAnimations() {
-    BufferedImage img;
-    File file = new File("../assets/player_sprites.png");
-    try {
-      img = ImageIO.read(file);
-      animations = new BufferedImage[9][6];
-      for (int i = 0; i < animations.length; i++)
-        for (int j = 0; j < getSpriteAmount(i); j++)
-          animations[i][j] = img.getSubimage(64 * j, 40 * i, 64, 40);
-    } catch (Exception e) {
-      System.out.println("Error reading player_sprites.png: " + e.getMessage());
-    }
+    BufferedImage img = LoadSave.getSpriteAtlas(LoadSave.PLAYER_ATLAS);
+
+    animations = new BufferedImage[9][6];
+    for (int i = 0; i < animations.length; i++)
+      for (int j = 0; j < getSpriteAmount(i); j++)
+        animations[i][j] = img.getSubimage(64 * j, 40 * i, 64, 40);
   }
 
   private void updateAnimationTick() {
